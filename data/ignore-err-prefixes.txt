@@ -1,0 +1,2 @@
+GET /objects err1-text
+GET /objects/{object_id} err1-text
