@@ -50,3 +50,7 @@ func (list StringList) Less(i, j int) bool {
 func (list StringList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
+
+func (list StringList) Empty() bool {
+	return list.Len() == 0
+}

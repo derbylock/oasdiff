@@ -16,6 +16,7 @@ import (
 const (
 	ERR  = 0
 	WARN = 1
+	INFO = 2
 )
 
 const (
@@ -24,13 +25,14 @@ const (
 )
 
 type BackwardCompatibilityError struct {
-	Id        string `json:"id,omitempty" yaml:"id,omitempty"`
-	Text      string `json:"text,omitempty" yaml:"text,omitempty"`
-	Comment   string `json:"comment,omitempty" yaml:"comment,omitempty"`
-	Level     int    `json:"level,omitempty" yaml:"level,omitempty"`
-	Operation string `json:"operation,omitempty" yaml:"operation,omitempty"`
-	Path      string `json:"path,omitempty" yaml:"path,omitempty"`
-	Source    string `json:"source,omitempty" yaml:"source,omitempty"`
+	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	Text        string `json:"text,omitempty" yaml:"text,omitempty"`
+	Comment     string `json:"comment,omitempty" yaml:"comment,omitempty"`
+	Level       int    `json:"level,omitempty" yaml:"level,omitempty"`
+	Operation   string `json:"operation,omitempty" yaml:"operation,omitempty"`
+	OperationId string `json:"operationId,omitempty" yaml:"operationId,omitempty"`
+	Path        string `json:"path,omitempty" yaml:"path,omitempty"`
+	Source      string `json:"source,omitempty" yaml:"source,omitempty"`
 }
 
 type BackwardCompatibilityCheck func(diffReport *diff.Diff, operationsSources *diff.OperationsSourcesMap, config BackwardCompatibilityCheckConfig) []BackwardCompatibilityError

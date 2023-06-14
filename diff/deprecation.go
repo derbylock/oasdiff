@@ -11,23 +11,23 @@ import (
 
 const SunsetExtension = "x-sunset"
 
-func GetSunsetDate(extensionProps openapi3.ExtensionProps) (civil.Date, error) {
+func GetSunsetDate(extensionProps openapi3.ExtensionProps) (string, civil.Date, error) {
 	sunsetJson, ok := extensionProps.Extensions[SunsetExtension].(json.RawMessage)
 	if !ok {
-		return civil.Date{}, errors.New("not found")
+		return "", civil.Date{}, errors.New("not found")
 	}
 
 	var sunset string
 	if err := json.Unmarshal(sunsetJson, &sunset); err != nil {
-		return civil.Date{}, errors.New("unmarshal failed")
+		return string(sunsetJson), civil.Date{}, errors.New("unmarshal failed")
 	}
 
 	date, err := civil.ParseDate(sunset)
 	if err != nil {
-		return civil.Date{}, errors.New("failed to parse time")
+		return sunset, civil.Date{}, errors.New("failed to parse time")
 	}
 
-	return date, nil
+	return sunset, date, nil
 }
 
 // SunsetAllowed checks if an element can be deleted after deprecation period
@@ -37,7 +37,7 @@ func SunsetAllowed(deprecated bool, extensionProps openapi3.ExtensionProps) bool
 		return false
 	}
 
-	date, err := GetSunsetDate(extensionProps)
+	_, date, err := GetSunsetDate(extensionProps)
 	if err != nil {
 		return false
 	}
@@ -50,7 +50,7 @@ func DeprecationPeriodSufficient(deprecationDays int, extensionProps openapi3.Ex
 		return true
 	}
 
-	date, err := GetSunsetDate(extensionProps)
+	_, date, err := GetSunsetDate(extensionProps)
 	if err != nil {
 		return false
 	}

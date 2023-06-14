@@ -27,15 +27,24 @@ func APIDeprecationCheck(diffReport *diff.Diff, operationsSources *diff.Operatio
 			}
 
 			if operationDiff.DeprecatedDiff.To == nil || operationDiff.DeprecatedDiff.To == false {
+				// not breaking changes
+				result = append(result, BackwardCompatibilityError{
+					Id:        "endpoint-reactivated",
+					Level:     INFO,
+					Text:      config.i18n("endpoint-reactivated"),
+					Operation: operation,
+					Path:      path,
+					Source:    source,
+				})
 				continue
 			}
 
-			date, err := diff.GetSunsetDate(op.ExtensionProps)
+			rawDate, date, err := diff.GetSunsetDate(op.ExtensionProps)
 			if err != nil {
 				result = append(result, BackwardCompatibilityError{
 					Id:        "api-deprecated-sunset-parse",
 					Level:     ERR,
-					Text:      config.i18n("api-deprecated-sunset-parse"),
+					Text:      fmt.Sprintf(config.i18n("api-deprecated-sunset-parse"), rawDate, err),
 					Operation: operation,
 					Path:      path,
 					Source:    source,
@@ -44,7 +53,6 @@ func APIDeprecationCheck(diffReport *diff.Diff, operationsSources *diff.Operatio
 			}
 
 			days := date.DaysSince(civil.DateOf(time.Now()))
-			deprecationDays := config.MinSunsetStableDays
 
 			stability, err := getStabilityLevel(op.Extensions)
 			if err != nil {
@@ -58,9 +66,8 @@ func APIDeprecationCheck(diffReport *diff.Diff, operationsSources *diff.Operatio
 				})
 				continue
 			}
-			if stability == "beta" {
-				deprecationDays = config.MinSunsetBetaDays
-			}
+
+			deprecationDays := getDeperacationDays(config, stability)
 
 			if days < deprecationDays {
 				result = append(result, BackwardCompatibilityError{
@@ -71,7 +78,18 @@ func APIDeprecationCheck(diffReport *diff.Diff, operationsSources *diff.Operatio
 					Path:      path,
 					Source:    source,
 				})
+				continue
 			}
+
+			// not breaking changes
+			result = append(result, BackwardCompatibilityError{
+				Id:        "endpoint-deprecated",
+				Level:     INFO,
+				Text:      config.i18n("endpoint-deprecated"),
+				Operation: operation,
+				Path:      path,
+				Source:    source,
+			})
 		}
 	}
 

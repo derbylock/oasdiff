@@ -32,13 +32,13 @@ func APIRemovedCheck(diffReport *diff.Diff, operationsSources *diff.OperationsSo
 				})
 				continue
 			}
-			date, err := diff.GetSunsetDate(op.ExtensionProps)
+			rawDate, date, err := diff.GetSunsetDate(op.ExtensionProps)
 			if err != nil {
 				source := "original_source=" + (*operationsSources)[op]
 				result = append(result, BackwardCompatibilityError{
 					Id:        "api-path-sunset-parse",
 					Level:     ERR,
-					Text:      "api path sunset date can't be parsed",
+					Text:      fmt.Sprintf(config.i18n("api-deprecated-sunset-parse"), rawDate, err),
 					Operation: operation,
 					Path:      path,
 					Source:    source,
@@ -48,12 +48,13 @@ func APIRemovedCheck(diffReport *diff.Diff, operationsSources *diff.OperationsSo
 			if !civil.DateOf(time.Now()).After(date) {
 				source := (*operationsSources)[op]
 				result = append(result, BackwardCompatibilityError{
-					Id:        "api-path-removed-before-sunset",
-					Level:     ERR,
-					Text:      fmt.Sprintf(config.i18n("api-path-removed-before-sunset"), date),
-					Operation: operation,
-					Path:      path,
-					Source:    source,
+					Id:          "api-path-removed-before-sunset",
+					Level:       ERR,
+					Text:        fmt.Sprintf(config.i18n("api-path-removed-before-sunset"), date),
+					Operation:   operation,
+					OperationId: op.OperationID,
+					Path:        path,
+					Source:      source,
 				})
 			}
 		}
@@ -68,37 +69,40 @@ func APIRemovedCheck(diffReport *diff.Diff, operationsSources *diff.OperationsSo
 			if !op.Deprecated {
 				source := (*operationsSources)[op]
 				result = append(result, BackwardCompatibilityError{
-					Id:        "api-removed-without-deprecation",
-					Level:     ERR,
-					Text:      config.i18n("api-removed-without-deprecation"),
-					Operation: operation,
-					Path:      path,
-					Source:    source,
+					Id:          "api-removed-without-deprecation",
+					Level:       ERR,
+					Text:        config.i18n("api-removed-without-deprecation"),
+					Operation:   operation,
+					OperationId: op.OperationID,
+					Path:        path,
+					Source:      source,
 				})
 				continue
 			}
-			date, err := diff.GetSunsetDate(op.ExtensionProps)
+			rawDate, date, err := diff.GetSunsetDate(op.ExtensionProps)
 			if err != nil {
 				source := (*operationsSources)[op]
 				result = append(result, BackwardCompatibilityError{
-					Id:        "api-sunset-parse",
-					Level:     ERR,
-					Text:      "api sunset date can't be parsed",
-					Operation: operation,
-					Path:      path,
-					Source:    source,
+					Id:          "api-path-sunset-parse",
+					Level:       ERR,
+					Text:        fmt.Sprintf(config.i18n("api-deprecated-sunset-parse"), rawDate, err),
+					Operation:   operation,
+					OperationId: op.OperationID,
+					Path:        path,
+					Source:      source,
 				})
 				continue
 			}
 			if !civil.DateOf(time.Now()).After(date) {
 				source := (*operationsSources)[op]
 				result = append(result, BackwardCompatibilityError{
-					Id:        "api-removed-before-sunset",
-					Level:     ERR,
-					Text:      fmt.Sprintf(config.i18n("api-removed-before-sunset"), date),
-					Operation: operation,
-					Path:      path,
-					Source:    source,
+					Id:          "api-removed-before-sunset",
+					Level:       ERR,
+					Text:        fmt.Sprintf(config.i18n("api-removed-before-sunset"), date),
+					Operation:   operation,
+					OperationId: op.OperationID,
+					Path:        path,
+					Source:      source,
 				})
 			}
 		}

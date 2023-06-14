@@ -13,6 +13,10 @@ type InterfaceMapDiff struct {
 // ModifiedInterfaces is map of interface names to their respective diffs
 type ModifiedInterfaces map[string]*ValueDiff
 
+func (i ModifiedInterfaces) Empty() bool {
+	return len(i) == 0
+}
+
 // Empty indicates whether a change was found in this element
 func (diff *InterfaceMapDiff) Empty() bool {
 	if diff == nil {

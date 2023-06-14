@@ -187,7 +187,10 @@ func TestBreaking_DeprecatedOperation(t *testing.T) {
 	d, osm, err := diff.GetWithOperationsSourcesMap(&diff.Config{}, &s1, &s2)
 	require.NoError(t, err)
 	errs := checker.CheckBackwardCompatibility(checker.DefaultChecks(), d, osm)
-	require.Empty(t, errs)
+	require.NotEmpty(t, errs)
+	require.Len(t, errs, 1)
+	require.Equal(t, "endpoint-deprecated", errs[0].Id)
+	require.Equal(t, checker.INFO, errs[0].Level)
 }
 
 // BC: deprecating a parameter is not breaking

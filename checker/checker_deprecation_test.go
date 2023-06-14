@@ -47,7 +47,7 @@ func TestBreaking_DeprecationNoSunset(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, errs)
 	require.Len(t, errs, 1)
-	require.Equal(t, "api-sunset-parse", errs[0].Id)
+	require.Equal(t, "api-path-sunset-parse", errs[0].Id)
 }
 
 // BC: deleting an operation after sunset date is not breaking
@@ -230,7 +230,11 @@ func TestBreaking_DeprecationWithProperSunset(t *testing.T) {
 	c := checker.DefaultChecks()
 	c.MinSunsetStableDays = 10
 	errs := checker.CheckBackwardCompatibility(c, d, osm)
-	require.Empty(t, errs)
+	require.NotEmpty(t, errs)
+	require.Len(t, errs, 1)
+	require.Equal(t, "endpoint-deprecated", errs[0].Id)
+	require.Equal(t, 2, errs[0].Level)
+
 }
 
 // BC: deleting a path after sunset date of all contained operations is not breaking
