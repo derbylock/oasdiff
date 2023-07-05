@@ -119,6 +119,22 @@ func TestBreaking_RespBodyRequiredPropertyDisabled(t *testing.T) {
 	require.Equal(t, "response-property-became-optional", errs[0].Id)
 }
 
+// BC: changing an existing property in response body to optional is breaking
+func TestBreaking_RespBodyRequiredPropertyDisabledAndRemovedTopLevel(t *testing.T) {
+	s1, err := checker.LoadOpenAPISpecInfoFromFile(getReqPropFile("response-base-optionalandremoved.json"))
+	require.NoError(t, err)
+
+	s2, err := checker.LoadOpenAPISpecInfoFromFile(getReqPropFile("response-revision-optionalandremoved.json"))
+	require.NoError(t, err)
+
+	d, osm, err := diff.GetWithOperationsSourcesMap(&diff.Config{}, s1, s2)
+	require.NoError(t, err)
+	errs := checker.CheckBackwardCompatibility(checker.DefaultChecks(), d, osm)
+	require.NotEmpty(t, errs)
+	require.Len(t, errs, 1)
+	require.Equal(t, "response-required-property-removed", errs[0].Id)
+}
+
 // BC: changing an existing property in response body to required is not breaking
 func TestBreaking_RespBodyRequiredPropertyEnabled(t *testing.T) {
 	s1, err := checker.LoadOpenAPISpecInfoFromFile(getReqPropFile("response-revision.json"))
