@@ -16,7 +16,7 @@ api-removed-before-sunset: API удалёг до даты sunset %s
 sunset-deleted: удалена дата sunset date у API, но сохранён deprecated=true
 api-sunset-date-changed-too-small: дата sunset у API изменена на более раннюю с %s на %s, новая дата sunset должна быть либо не раньше %s, либо, как минимум, %d дней от текущего дня
 new-required-request-parameter: добавлен новый обязательный %s параметр зароса %s
-new-required-request-property: добавлено новле обязательное поле запроса %s
+new-required-request-property: добавлено новое обязательное поле запроса %s
 new-required-request-header-property: в заголовке запроса %s добавлено новое обязательное поле %s
 request-body-became-required: тело запроса стало обязательным
 request-header-property-became-required: в заголовке запроса %s поле %s стало обязательным
